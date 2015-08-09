@@ -29,21 +29,23 @@
 #define MCUenable	PB4
 #define RCenable	PB3
 
-#define VALIDCNT	3				// number of valid signals required to go manual
-#define DT			100				// delta time for ticks, usec
+#define VALIDCNT	3			// number of valid signals required to go manual
+#define DT		100			// delta time for ticks, usec
 #define TIMEOUT		60000L			// timeout in microseconds
 
 /************* GLOBAL VARIABLES **************/
 
-uint8_t inactive1=VALIDCNT;			// RX signal active pulse counter
-long ontime1;  						// measure length of signal on time
-long offtime1; 						// measure length of signal off time
-uint8_t history1;					// history of pin states
+// CH1
+uint8_t inactive1=VALIDCNT;			// RX signal active pulse counter,
+long ontime1;  					// measure length of signal on time
+long offtime1; 					// measure length of signal off time
+uint8_t history1;				// history of pin states
 
+// CH3
 uint8_t inactive3=VALIDCNT;			// RX signal active pulse counter
-long ontime3;  						// measure length of signal on time
-long offtime3; 						// measure length of signal off time
-uint8_t history3;					// history of pin states
+long ontime3;  					// measure length of signal on time
+long offtime3; 					// measure length of signal off time
+uint8_t history3;				// history of pin states
 
 /****************** CODE *********************/
 
@@ -54,10 +56,11 @@ int main() {
 
 	// Setup timer to keep track of timing of signal
 	// This is in the main routine instead of a function to save a few bytes of flash
-	TCCR0A = (1<<WGM01);					// CTC mode
+	//
+	TCCR0A = (1<<WGM01);			// CTC mode
 	TCCR0B = (0<<CS02)|(1<<CS01)|(0<<CS00); // clk/8, 9.6MHz -> 1.2MHz
-	OCR0A = 111; 							// 1.2MHz / 120 -> 10kHz, 100usec
-	TIMSK0 = (1<<OCIE0A);					// Enable output compare A interrupt
+	OCR0A = 111; 				// 1.2MHz / 120 -> 10kHz, 100usec
+	TIMSK0 = (1<<OCIE0A);			// Enable output compare A interrupt
 
 	/* Ready to receive interrupts, now */
 	sei();
@@ -70,6 +73,7 @@ int main() {
  * Timer interrupt handler, fires periodically, counts on time, off time, and manages signal timeout
  */
 ISR(TIM0_COMPA_vect) {
+
 	// Count on time and off time for CH1
 	history1 <<= 1;
 	if ((PINB & (1<<CH1RX)) == 0) {
