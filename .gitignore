@@ -19,6 +19,8 @@
 # comment the following line if you want to have your project file included.
 eagle.epf
 
+*.silk
+
 # CAM files
 *.$$$
 *.cmp
