@@ -10,17 +10,25 @@
 #define MCU3  5
 
 // Pins
+#define CH1OUT  8
+#define CH1RC   9
+#define CH1MCU 10
 #define CH2OUT  5
 #define CH2RC   6
 #define CH2MCU  7
 #define CH3OUT  2
 #define CH3RC   3
 #define CH3MCU  4
-#define CH1OUT  8
-#define CH1RC   9
-#define CH1MCU 10
 
-#define PAUSE 200
+#define MCU1DUR 10
+#define MCU2DUR 11
+#define MCU3DUR 12
+#define RC1DUR  14
+#define RC2DUR  15
+#define RC3DURL 13
+#define RC3DURH 17
+
+#define PAUSE 2000
 
 // Channel check errors
 #define CON_NONE  0x00             // Both outputs are low
@@ -34,10 +42,6 @@ Servo ch3;
  
 void setup() 
 {  
-  pinMode(CH1OUT, INPUT);
-  pinMode(CH2OUT, INPUT);
-  pinMode(CH3OUT, INPUT);
-
   Timer1.initialize(100);  // 100usec
   Timer1.attachInterrupt(servoHandler);
   Timer1.start();
@@ -48,98 +52,69 @@ void setup()
   servoPin(MCU2, CH2MCU);
   servoPin(RC3, CH3RC);
   servoPin(MCU3, CH3MCU); 
-  
+
+  servoInPin(CH1OUT);
+  servoInPin(CH2OUT);
+  servoInPin(CH3OUT);
+ 
+  servoSet(MCU1, MCU1DUR);
+  servoSet(MCU2, MCU2DUR);
+  servoSet(MCU3, MCU3DUR);
+    
   Serial.begin(9600);
 } 
- 
+
+
+void displayServos()
+{
+  Serial.print(" CH1OUT: ");
+  Serial.print(getDuration(CH1OUT));
+  Serial.print(" CH2OUT: ");
+  Serial.print(getDuration(CH2OUT));
+  Serial.print(" CH3OUT: ");
+  Serial.print(getDuration(CH3OUT));
+  Serial.println();
+}
+
+boolean checkChannel(long dur, long desired)
+{
+  boolean result;
+  
+  if (dur == result) {
+    Serial.print("OK ");
+  } else {
+    Serial.print("BAD ");
+  }
+  
+  return result;
+}
  
 void loop() 
 { 
-  servoSet(RC1, 15);
-  delay(500);
+  servoSet(RC1, 0);
+  servoSet(RC2, 0);
+  servoSet(RC3, 0);
+  delay(PAUSE);
+  displayServos();
+
+  servoSet(RC1, RC1DUR);
+  servoSet(RC2, RC2DUR);
+  servoSet(RC3, 0);
+  delay(PAUSE);
+  displayServos();
+
+  servoSet(RC1, RC1DUR);
+  servoSet(RC2, RC2DUR);
+  servoSet(RC3, RC3DURL);
+  delay(PAUSE);
+  displayServos();
+
+  servoSet(RC1, RC1DUR);
+  servoSet(RC2, RC2DUR);
+  servoSet(RC3, RC3DURH);
+  delay(PAUSE);
+  displayServos();
+
+  Serial.println("----------------------------------");
 } 
-
-#define MAXSERVO 6
-long count=0;
-long period[MAXSERVO] = { 15, 15, 15, 15, 15, 15 };
-int pin[MAXSERVO] = { CH1RC, CH2RC, CH3RC, CH1MCU, CH2MCU, CH3MCU };
-int enabled[MAXSERVO] = { false, false, false, false, false, false };
-
-#define servoValid(s) (s >= 0 && s < MAXSERVO)
-
-/** note: not checking validity of pin */
-void servoPin(int servo, int p)
-{
-  if (servoValid(servo)) {
-    pin[servo] = p;
-    pinMode(pin[servo], OUTPUT);
-    digitalWrite(pin[servo], LOW);
-  }
-}
-
-
-/**
- * per -- length of signal in 100's of usec, e.g., 15 for 1500usec (center)
- */
-void servoSet(int servo, long per)
-{
-  if (servoValid(servo)) {
-    if (per == 0) {
-      enabled[servo] = false;
-    } else {
-      period[servo] = per;
-      enabled[servo] = true;
-    }
-  }
-}
-
-void servoHandler()
-{
-  int i;
-
-  ++count;
-
-  for (i = 0; i < MAXSERVO; i++) {
-    if (count > period[i]) {
-      digitalWrite(pin[i], LOW);
-    }
-  }
-
-  if (count > 200) {
-    for (i = 0; i < MAXSERVO; i++) {
-      digitalWrite(pin[i], enabled[i] ? HIGH : LOW);
-    }
-    count = 0;
-  }
-}
-
-/*
-int checkChannel(int mcu, int rc, int output, int desired) 
-{
-  int result = 0;
-
-  pinMode(mcu, OUTPUT);
-  pinMode(rc, OUTPUT);
-  pinMode(output, INPUT);
-  
-  digitalWrite(mcu, HIGH);
-  digitalWrite(rc, LOW);
-  delay(1);
-  if (digitalRead(output) == HIGH) result |= CON_MCU;
-
-  digitalWrite(mcu, LOW);
-  digitalWrite(rc, HIGH);
-  delay(1);
-  if (digitalRead(output) == HIGH) result |= CON_RC;
-
-  digitalWrite(mcu, LOW);
-  digitalWrite(rc, LOW);
-  delay(1);
-  if (digitalRead(output) == HIGH) result |= CON_ERR;
-
-  Serial.print(result);
-
-  return result;
-}
-*/
 
