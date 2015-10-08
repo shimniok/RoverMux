@@ -43,6 +43,10 @@ void setup()
   Timer1.attachInterrupt(servos);
   Timer1.start();
   
+  servoOn(0);
+  servoOn(3);
+  servoOn(4);
+  
   Serial.begin(9600);
 } 
  
@@ -54,12 +58,30 @@ void loop()
 
 #define MAXSERVO 6
 long count=0;
-long period[MAXSERVO] = { 15, 10, 20 };
-int rc[MAXSERVO] = { CH1RC, CH2RC, CH3RC };
-int on[MAXSERVO] = { 1, 1, 1 };
+long period[MAXSERVO] = { 15, 15, 15, 15, 15, 15 };
+int rc[MAXSERVO] = { CH1RC, CH2RC, CH3RC, CH1MCU, CH2MCU, CH3MCU };
+int on[MAXSERVO] = { false, false, false, false, false, false };
 
-void servoEnable(int i)
+#define servoValid(s) (s >= 0 && s < MAXSERVO)
+
+void servoOn(int servo)
 {
+  if (servoValid(servo)) on[servo] = true;
+}
+
+void servoOff(int servo)
+{
+  if (servoValid(servo)) on[servo] = false;
+}
+
+/**
+ * per -- usec length of signal, e.g., 1500 (1.5ms, typically center)
+ */
+void servoSet(int servo, long per)
+{
+  if (servoValid(servo) && per >= 1000 && per <= 2000) {
+    period[servo] = per;
+  }
 }
 
 void servos()
@@ -68,14 +90,14 @@ void servos()
 
   ++count;
 
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < MAXSERVO; i++) {
     if (count > period[i]) {
       digitalWrite(rc[i], LOW);
     }
   }
 
   if (count > 200) {
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < MAXSERVO; i++) {
       digitalWrite(rc[i], on[i] ? HIGH : LOW);
     }
     count = 0;
