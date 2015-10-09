@@ -17,7 +17,12 @@ void servoTimer(byte pin) {
 
 
 uint16_t getDuration(byte pin) {
-  return (pin >= 0 && pin < 20) ? tdur[pin] : 0;
+  uint16_t dur;
+ 
+  dur = (pin >= 0 && pin < 20) ? tdur[pin] : 0;
+  tdur[pin] = 0;
+
+  return dur;
 }
 
 
