@@ -25,6 +25,9 @@ void setup() {
   pinMode(CH1MCU, OUTPUT);
   mcu1.attach(CH1MCU);
   mcu1.write(140);
+  servoTimer(CH1OUT);
+  servoTimer(CH1RC);
+  servoTimer(CH1MCU);
 
   pinMode(CH2RC, OUTPUT);
   rc2.attach(CH2RC);
@@ -33,6 +36,9 @@ void setup() {
   mcu2.attach(CH2MCU);
   mcu2.write(140);   
   pinMode(CH2OUT, INPUT);
+  servoTimer(CH2OUT);
+  servoTimer(CH2RC);
+  servoTimer(CH2MCU);
 
   pinMode(CH3OUT, INPUT);
   pinMode(CH3RC, OUTPUT);
@@ -40,13 +46,17 @@ void setup() {
   pinMode(CH3MCU, OUTPUT);
   mcu3.attach(CH3MCU);
   mcu3.write(140);
-  
-  inServo(7);
-  
+  servoTimer(CH3OUT);
+  servoTimer(CH3RC);
+  servoTimer(CH3MCU);
+    
   Serial.begin(115200);
 }
 
+
 void loop() {
+  uint16_t o, r, m; // out, rc, mcu
+  
   // CH1 off, CH3 off  
   rc1.detach();
   pinMode(CH1RC, OUTPUT);
@@ -55,24 +65,40 @@ void loop() {
   pinMode(CH3RC, OUTPUT);
   digitalWrite(CH3RC, LOW);
   delay(PAUSE);
-  Serial.println(getDuration(7));
+  o = getDuration(CH1OUT);
+  m = getDuration(CH1MCU);
+  if (o == 0) {
+    Serial.print("N/C ");
+  } else if (o == m) {
+    Serial.print("OK  ");
+  } else {
+    Serial.print("ERR ");
+  }  
+  Serial.print(" OUT1=");
+  Serial.print(getDuration(CH1OUT));
+  Serial.print(" RC1=");
+  Serial.print(getDuration(CH1RC));
+  Serial.print(" MCU1=");
+  Serial.print(getDuration(CH1MCU));
+  Serial.println();
+  
   
   // CH1 on, CH3 off
   rc1.attach(CH1RC);
   rc1.write(40);
   delay(PAUSE);
-  Serial.println(getDuration(7));
+  Serial.println(getDuration(8));
 
   // CH1 on, CH3 hi
   rc3.attach(CH3RC);
   rc3.write(110);
   delay(PAUSE);
-  Serial.println(getDuration(7));
+  Serial.println(getDuration(8));
 
   // CH1 on, CH3 low  
   rc3.write(70);
   delay(PAUSE);
-  Serial.println(getDuration(7));
+  Serial.println(getDuration(8));
 
 }
 
