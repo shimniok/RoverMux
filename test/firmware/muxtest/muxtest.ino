@@ -41,6 +41,8 @@ void setup() {
   mcu3.attach(CH3MCU);
   mcu3.write(140);
   
+  inServo(7);
+  
   Serial.begin(115200);
 }
 
@@ -53,20 +55,24 @@ void loop() {
   pinMode(CH3RC, OUTPUT);
   digitalWrite(CH3RC, LOW);
   delay(PAUSE);
+  Serial.println(getDuration(7));
   
   // CH1 on, CH3 off
   rc1.attach(CH1RC);
   rc1.write(40);
   delay(PAUSE);
-  Serial.println(dur1);
+  Serial.println(getDuration(7));
 
   // CH1 on, CH3 hi
   rc3.attach(CH3RC);
   rc3.write(110);
   delay(PAUSE);
+  Serial.println(getDuration(7));
 
   // CH1 on, CH3 low  
   rc3.write(70);
   delay(PAUSE);
+  Serial.println(getDuration(7));
+
 }
 
