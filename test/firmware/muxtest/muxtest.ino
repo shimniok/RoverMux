@@ -12,7 +12,7 @@
 #define CH3MCU  4
 
 #define PAUSE1 200
-#define PAUSE2 3000
+#define PAUSE2 1000
 
 #define CON_MCU 0x01
 #define CON_RC  0x02
@@ -65,8 +65,9 @@ byte test_state = 0;
 void loop() {
 
   // CH1 off, CH3 off  
-  Serial.println("\n----------------");
-  Serial.println("CH1=off, CH3=off\n");
+  Serial.println("----------------");
+  Serial.println("CH1=off, CH3=off");
+  Serial.println("----------------");
   rc1.detach();
   pinMode(CH1RC, OUTPUT);
   digitalWrite(CH1RC, LOW);
@@ -74,41 +75,52 @@ void loop() {
   pinMode(CH3RC, OUTPUT);
   digitalWrite(CH3RC, LOW);
   delay(PAUSE1);
+  resetDurations();
+  delay(PAUSE1);
   checkChannel(CH1MCU, CH1RC, CH1OUT, CON_MCU, "CH1");
   checkChannel(CH2MCU, CH2RC, CH2OUT, CON_MCU, "CH2");
   checkChannel(CH3MCU, CH3RC, CH3OUT, CON_MCU, "CH3");
   delay(PAUSE2);
 
   // CH1 on, CH3 off
-  Serial.println("\n----------------");
-  Serial.println("CH1=on, CH3=off\n");
+  Serial.println("----------------");
+  Serial.println("CH1=on, CH3=off");
+  Serial.println("----------------");
   rc1.attach(CH1RC);
   rc1.write(60);
+  delay(PAUSE1);
+  resetDurations();
   delay(PAUSE1);
   checkChannel(CH1MCU, CH1RC, CH1OUT, CON_RC, "CH1");
   checkChannel(CH2MCU, CH2RC, CH2OUT, CON_RC, "CH2");
   checkChannel(CH3MCU, CH3RC, CH3OUT, CON_NC, "CH3");
   delay(PAUSE2);
 
-  // CH1 on, CH3 hi
-  Serial.println("\n----------------");
-  Serial.println("CH1=on, CH3=hi\n");
-  rc3.attach(CH3RC);
-  rc3.write(110);
-  delay(PAUSE1);
-  checkChannel(CH1MCU, CH1RC, CH1OUT, CON_RC, "CH1");
-  checkChannel(CH2MCU, CH2RC, CH2OUT, CON_RC, "CH2");
-  checkChannel(CH3MCU, CH3RC, CH3OUT, CON_RC, "CH3");
-  delay(PAUSE2);
-
   // CH1 on, CH3 low  
-  Serial.println("\n----------------");
-  Serial.println("CH1=on, CH3=lo\n");
+  Serial.println("----------------");
+  Serial.println("CH1=on, CH3=lo");
+  Serial.println("----------------");
+  rc3.attach(CH3RC);
   rc3.write(70);
+  delay(PAUSE1);
+  resetDurations();
   delay(PAUSE1);
   checkChannel(CH1MCU, CH1RC, CH1OUT, CON_MCU, "CH1");
   checkChannel(CH2MCU, CH2RC, CH2OUT, CON_MCU, "CH2");
   checkChannel(CH3MCU, CH3RC, CH3OUT, CON_MCU, "CH3");
+  delay(PAUSE2);
+
+  // CH1 on, CH3 hi
+  Serial.println("----------------");
+  Serial.println("CH1=on, CH3=hi");
+  Serial.println("----------------");
+  rc3.write(110);
+  delay(PAUSE1);
+  resetDurations();
+  delay(PAUSE1);
+  checkChannel(CH1MCU, CH1RC, CH1OUT, CON_RC, "CH1");
+  checkChannel(CH2MCU, CH2RC, CH2OUT, CON_RC, "CH2");
+  checkChannel(CH3MCU, CH3RC, CH3OUT, CON_RC, "CH3");
   delay(PAUSE2);
 
   Serial.println();

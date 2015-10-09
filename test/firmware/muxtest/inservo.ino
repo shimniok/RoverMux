@@ -16,11 +16,18 @@ void servoTimer(byte pin) {
 }
 
 
+void resetDurations() {
+  for (int i=0; i < 20; i++) {
+    tstart[i] = 0;
+    tdur[i] = 0;
+  }
+}
+
+
 uint16_t getDuration(byte pin) {
   uint16_t dur;
  
   dur = (pin >= 0 && pin < 20) ? tdur[pin] : 0;
-  tdur[pin] = 0;
 
   return dur;
 }
@@ -56,7 +63,6 @@ ISR (PCINT0_vect) {
 ISR (PCINT1_vect) {
   byte changed; 
   const byte offset = 14; // PC0 ==> D14
-  tdur[7] = 4;  
 } // PCINT1_vect
 
 
