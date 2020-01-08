@@ -6,12 +6,18 @@
 PROJECT 		= rovermux
 MCU 			= attiny13a
 PMCU			= t13
-PORT 			= usb
-PROGRAMMER 		= dragon_isp
+#Uncomment one of these for programming or add a different programmer.
+#You can also set up your default programmer in .avrduderc
+#PORT			= -P /dev/usbasp
+#PROGRAMMER		= -c usbasp
+#PORT			= -P usb
+#PROGRAMMER     = -c dragon_isp
+#PORT			= -P usb
+#PROGRAMMER		= -c avrispv2
 F_CPU 			= 9600000UL
 TARGET 			= $(PROJECT).elf
 AVRBIN 			= /opt/avr/bin
-CC 			= $(AVRBIN)/avr-gcc
+CC 				= $(AVRBIN)/avr-gcc
 CPP 			= $(AVRBIN)/avr-g++
 OBJCOPY			= $(AVRBIN)/avr-objcopy
 OBJDUMP			= $(AVRBIN)/avr-objdump
@@ -22,7 +28,7 @@ LFUSE			= 0x7a
 HFUSE			= 0xff
 
 ## Objects that must be built in order to link
-OBJECTS = main.o 
+OBJECTS = main.o
 
 ## Options common to compile, link and assembly rules
 COMMON = -mmcu=$(MCU)
@@ -30,7 +36,7 @@ COMMON = -mmcu=$(MCU)
 ## Compile options common for all C compilation units.
 CFLAGS = $(COMMON)
 CFLAGS += -Wall -gdwarf-2 -std=gnu99 -DF_CPU=$(F_CPU) -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d 
+CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d
 
 ## Assembly specific flags
 ASMFLAGS = $(COMMON)
@@ -49,7 +55,7 @@ HEX_EEPROM_FLAGS += --set-section-flags=.eeprom="alloc,load"
 HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 ## Objects explicitly added by the user
-LINKONLYOBJECTS = 
+LINKONLYOBJECTS =
 
 ## Build
 all: $(TARGET) $(PROJECT).hex $(PROJECT).eep $(PROJECT).lss size
@@ -71,15 +77,15 @@ $(TARGET): $(OBJECTS)
 %.lss: $(TARGET)
 	$(OBJDUMP) -h -S $< > $@
 
-install: $(PROJECT).hex 
-	$(AVRDUDE) -B 10 -p $(PMCU) -c $(PROGRAMMER) -P $(PORT) -v -U flash:w:$(PROJECT).hex -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m
+install: $(PROJECT).hex
+	$(AVRDUDE) -B 10 -p $(PMCU) $(PROGRAMMER) $(PORT) -v -U flash:w:$(PROJECT).hex -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m
 
 ## required for avr dragon to reset itself
 delay: fuses
 	@sleep 3
 
 fuses:
-	$(AVRDUDE) -p $(PMCU) -c $(PROGRAMMER) -P $(PORT) -v -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m 
+	$(AVRDUDE) -p $(PMCU) -c $(PROGRAMMER) -P $(PORT) -v -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m
 
 size: ${TARGET}
 	@echo
@@ -93,4 +99,3 @@ clean:
 
 ## Other dependencies
 -include $(shell mkdir dep 2>/dev/null) $(wildcard dep/*)
-
