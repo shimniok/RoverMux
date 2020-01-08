@@ -16,22 +16,22 @@
 
 /*************** DEFINITIONS ****************/
 
-#define CH1RX		PB2
-#define CH1INT		PCINT2
-#define CH3RX		PB0
-#define CH3INT		PCINT0
+#define CH1RX       PB2
+#define CH1INT      PCINT2
+#define CH3RX       PB0
+#define CH3INT      PCINT0
 
-#define MINPERIOD	5000L
-#define MAXPERIOD	50000L
-#define MINONTIME	300L
-#define MAXONTIME	3000L
+#define MINPERIOD   5000L
+#define MAXPERIOD   50000L
+#define MINONTIME   300L
+#define MAXONTIME   3000L
 
-#define MCUenable	PB4
-#define RCenable	PB3
+#define MCUenable   PB4
+#define RCenable    PB3
 
-#define VALIDCNT	3			// number of valid signals required to go manual
-#define DT		100			// delta time for ticks, usec
-#define TIMEOUT		60000L			// timeout in microseconds
+#define VALIDCNT    3			// number of valid signals required to go manual
+#define DT          100			// delta time for ticks, usec
+#define TIMEOUT     60000L			// timeout in microseconds
 
 /************* GLOBAL VARIABLES **************/
 
@@ -143,5 +143,3 @@ ISR(TIM0_COMPA_vect) {
 		PORTB = (1<<MCUenable);
 	}
 }
-
-
